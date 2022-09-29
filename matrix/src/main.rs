@@ -1,30 +1,52 @@
+#[allow(unused)]
+#[allow(unused_imports)]
 extern crate nalgebra as na;
 extern crate csv;
 
-use std::env;
-//use std::io;
+//use std::env;
+use std::io;
 //use  std::fs;
 //use  std::process;
 
 fn main() {
-    //    use na::Matrix3;
-    //   use na::Complex;
+    use na::Matrix3;
+    use na::Complex;
 //    use na::linalg::SVD;
 
+//I think I need to add/create some values to initially fill this?s
+    let mut m1 = Matrix3::zeros();
+    let mut x = 0;
+    let mut y = 0;
 
+    //let args: Vec<String> = env::args().collect();
 
-    let args: Vec<String> = env::args().collect();
+    //let file_path = &args[1];
 
-    let file_path = &args[1];
+    
+    let mut rdr = csv::ReaderBuilder::new()
+	.has_headers(false)
+	.from_reader(io::stdin());
+    // Loop over each record.
+     for result in rdr.records() {
+        // An error may occur, so abort the program in an unfriendly way.
+         // We will make this more friendly lat
 
-    let mut rdr = csv::Reader::from_file(file_path);
+	 let record = result.expect("a CSV record");
+	 let mut com = Complex{re:record[0], im: record[1]};
+	  m1[(x,y)] =com;
+	 x += 1;
+	 if x >= 3 {
+	   x = 0;
+	    y +=1;
+	}
+	
+        // Print a debug version of the record.
+       // println!("{:?}", m1);
+	 }
 
-    for result in rdr.records(){
-	let record = result.expect("a CSV record");
-	println!("{:?}", record);
-    }
-//    println!("{:?}", rdr);
-   /* 
+	 println!("{:4?}", m1);
+
+    /* 
     let xx = Complex {
 	
 	re:698.680727128154,
