@@ -1,46 +1,30 @@
-//use std::env;
-use std::fs;
-//use std::error::Error;
-//use std::io::BufRead;
-use nalgebra::Matrix3;
-use nalgebra::Complex;
+/* ultimate goal:
+
+Well here's something that would be cool
+(but a not small project), digest some tables of retrieved objects
+(with polarizability values) and do a best fit of an ellipsoid model
+to it and spit out the estimated permeability and semi axes.
+
+SVD(conj_transpose(alpha) x alpha) <-- apparently what we do?
+
+1. Measure
+2. retrieve full polarizability tensor
+3. derive rotation matrix
+4. run a regression model plus threshold -- this extracts trends from the LUT to provide a score to each object in a scan
+*/
+
+use std::env;
+
+mod tensor_parse;
+
 fn main() {
-      // initialize the number of rows to zero; we'll increment this
-  // every time we encounter a newline in the input
-    let path = "/home/tyler/Documents/Rust/matrix/src/matrix.csv";
-    let file = fs::read_to_string(path)
-	.expect("Could not read file, ding dong");
-   // println!("{}", file);
-//    let mut split = "".to_owned().;
-    let mut val: Vec<&str> = file
-	.split(|c| c == ',' || c == '\n')
-	.collect();
-    val.truncate(18);
-    let mut float_val: Vec<f64> = Vec::new();
+    let args: Vec<String> = env::args().collect();
 
-    
-    for i in &val {
-	//println!("{:?}", i.trim());
-	float_val.push(i.trim().parse::<f64>().unwrap());
-    }
-
-    let  mat = Matrix3::<Complex<f64>>::new(
-	Complex::<f64>::new(float_val[0],float_val[1]),
-	Complex::<f64>::new(float_val[2],float_val[3]),
-	Complex::<f64>::new(float_val[4],float_val[5]),
-		
-	Complex::<f64>::new(float_val[6],float_val[7]),
-	Complex::<f64>::new(float_val[8],float_val[9]),
-	Complex::<f64>::new(float_val[10],float_val[11]),
-
-	Complex::<f64>::new(float_val[12],float_val[13]),
-	Complex::<f64>::new(float_val[14],float_val[15]),
-	Complex::<f64>::new(float_val[16],float_val[17]));
-        
-   // println!("{:?}", mat);
+    let path = &args[1];
+    let vec = tensor_parse::get_file(path.to_string());
+    let mat = tensor_parse::complex_matrix(vec);
 
     let svd = mat.svd(true, true);
 
     println!("{:?}", svd);
-    
 }
