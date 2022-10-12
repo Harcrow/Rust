@@ -5,6 +5,8 @@ Well here's something that would be cool
 (with polarizability values) and do a best fit of an ellipsoid model
 to it and spit out the estimated permeability and semi axes.
 
+test
+
 SVD(conj_transpose(alpha) x alpha) <-- apparently what we do?
 
 1. Measure
