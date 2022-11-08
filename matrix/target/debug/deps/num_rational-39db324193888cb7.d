@@ -1,8 +1,0 @@
-/home/tyler/Documents/Rust/matrix/target/debug/deps/num_rational-39db324193888cb7.rmeta: /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/lib.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/pow.rs
-
-/home/tyler/Documents/Rust/matrix/target/debug/deps/libnum_rational-39db324193888cb7.rlib: /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/lib.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/pow.rs
-
-/home/tyler/Documents/Rust/matrix/target/debug/deps/num_rational-39db324193888cb7.d: /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/lib.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/pow.rs
-
-/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/lib.rs:
-/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/num-rational-0.4.1/src/pow.rs:
