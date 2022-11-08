@@ -34,7 +34,7 @@ fn main() {
 
     let svd = mat.svd(true, true);
 
-    let ellipse = ell::ellipse(1.0, 2.0, 3.0, 4.0, 1.1);
+    let ellipse = ell::ellipse(20.0, 30.0, 10.0, 4.1);
 
     
     
