@@ -1,7 +1,7 @@
 //used to find the best fit model of an ellipsoid
 use std::f32::consts::PI;
 
-pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32) {
+pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32, f32, f32, f32, f32, f32) {
     let volume = (4.0 / 3.0) * PI * a1 * a2 * a3;
     let normal = volume.cbrt();
     let a1 = a1 / normal;
@@ -50,5 +50,5 @@ pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32) {
     let alpha2: f32 = volume * (mu - 1.0) / (1.0 + (mu - 1.0) * n2);
     let alpha3: f32 = volume * (mu - 1.0) / (1.0 + (mu - 1.0) * n3);
 
-    return (alpha1, alpha2, alpha3);
+    return (alpha1, alpha2, alpha3, volume, a1, a2, a3, mu);
 }
