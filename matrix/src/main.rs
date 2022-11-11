@@ -21,32 +21,31 @@ use std::io::{Error, Write};
 
 mod ellipsoid_polarizability;
 mod tensor_parse;
+mod find_ellipsoid;
 
 use ellipsoid_polarizability as ell;
-
-
+use find_ellipsoid as find_ell;
 fn main() -> Result<(), Error> {
-
-    let ELLIPSE_ITER =275;
+    let ELLIPSE_ITER = 275;
     let ELLIPSE_RESOLUTION = 0.05;
     let TOLERANCE = 3.0;
-    
+
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
 
     let mut ell_vec = vec![0.0; ELLIPSE_ITER];
-    let perm_vec = vec![50, 1000, 10000, 50000, 200000 ];
+    let perm_vec = vec![0, 50, 1000, 10000, 50000, 200000];
 
     let mut tensor_a1 = Vec::new();
     let mut tensor_a2 = Vec::new();
     let mut tensor_a3 = Vec::new();
-   
+
     let mut i_index = Vec::new();
     let mut j_index = Vec::new();
     let mut k_index = Vec::new();
     let mut l_index = Vec::new();
     let mut volume = Vec::new();
-    
+
     let mut index = 0.3;
     let mut count = 0;
 
@@ -58,8 +57,8 @@ fn main() -> Result<(), Error> {
         index += ELLIPSE_RESOLUTION;
         count += 1;
     }
-    println!("ell_vec {:?}", ell_vec);
-    let _epsilon = 0.001;
+    //   println!("ell_vec {:?}", ell_vec);
+    //    let _epsilon = 0.001;
 
     let vec = tensor_parse::get_file(path.to_string());
     let mat = tensor_parse::complex_matrix(vec);
@@ -74,74 +73,41 @@ fn main() -> Result<(), Error> {
                     tensor_a1.push(ellipse.0);
                     tensor_a2.push(ellipse.1);
                     tensor_a3.push(ellipse.2);
-		    volume.push(ellipse.3);
-		    i_index.push(i);
-		    j_index.push(j);
-		    k_index.push(k);
-		    l_index.push(l);
-		    
-		    
-      //              write!(file, "{:?}, {:?}, {:?},  ", ellipse.0, ellipse.1, ellipse.2)?;
+                    volume.push(ellipse.3);
+                    i_index.push(i);
+                    j_index.push(j);
+                    k_index.push(k);
+                    l_index.push(l);
+
+                    //              write!(file, "{:?}, {:?}, {:?},  ", ellipse.0, ellipse.1, ellipse.2)?;
                     //println!("Pusing tensor updates");
                 }
             }
         }
     }
+    /*                    let ellipse = ell::ellipse(7.0, 3.0, 1.5, 50.0);
+                        tensor_a1.push(ellipse.0);
+                        tensor_a2.push(ellipse.1);
+                        tensor_a3.push(ellipse.2);
+                        volume.push(ellipse.3);
+                        i_index.push(7.0);
+                        j_index.push(3.0);
+                        k_index.push(1.5);
+                        l_index.push(50.0);
+    */
 
     //    println!("Right-Singular Vector {:.3?}", svd.v_t);
     //    println!("Left-Singular Vector {:.3?}", svd.u);
-   
 
     let singular_values_1 = svd.singular_values[(0, 0)];
     let singular_values_2 = svd.singular_values[(1, 0)];
     let singular_values_3 = svd.singular_values[(2, 0)];
 
-    let mut tensor_index_a1: Vec<usize> = Vec::new();
-    let mut tensor_index_a2: Vec<usize> = Vec::new();
-    let mut tensor_index_a3: Vec<usize> = Vec::new();
+    let beta_1 = singular_values_1 / (singular_values_1 + singular_values_2 + singular_values_3);
 
-    for (count, v) in tensor_a1.iter().enumerate() {
-        if v <= &(singular_values_1 + TOLERANCE) && v >= &(singular_values_1 - TOLERANCE) {
-            tensor_index_a1.push(count);
-           // println!("COUNT: {:?}, V: {:?}", count, v);
-        }
-    }
-    println!("Found {:?} matches for a1", tensor_index_a1.len());
-    //println!("a1 {:?}, a2 {:?}, a3, {:?} ", tensor_a1[tensor_index_a1]
-    for (_count, v) in tensor_index_a1.iter().enumerate(){
-	if (tensor_a2[*v] <= singular_values_2 + TOLERANCE) && tensor_a2[*v] >= (singular_values_2 - TOLERANCE){
-	    tensor_index_a2.push(*v);
-	   // println!("found a2: {:?}", v);
-	}
-    }
-     println!("Found {:?} matches for a2", tensor_index_a2.len());
+    //    let singular_values_1 = ;
+    //    let singular_values_2 = ;
+    //    let singular_values_3 = ;
 
-    for (_count, v) in tensor_index_a2.iter().enumerate(){
-	if (tensor_a3[*v] <= singular_values_3 + TOLERANCE) && tensor_a3[*v] >= (singular_values_3 - TOLERANCE){
-	    tensor_index_a3.push(*v);
-	    //println!("found a3: {:?}", v);
-	}
-    }
-    println!("Found {:?} matches for a3", tensor_index_a3.len());
-
-    for (_count, v) in tensor_index_a3.iter().enumerate(){
-	println!("========================================");
-	println!("Index is --------- {:?}", v);
-	
-	println!("alpha1 ----------- {:?}", tensor_a1[*v]);
-	println!("alpha2 ----------- {:?}", tensor_a2[*v]);
-	println!("alpha3 ----------- {:?}", tensor_a3[*v]);
-
-	println!("Volume ----------- {:?}", volume[*v]);
-	println!("semi-axis a1  ---- {:?}", i_index[*v]);
-	println!("semi-axis a2  ---- {:?}", j_index[*v]);
-	println!("semi-axis a3  ---- {:?}", k_index[*v]);
-	println!("permiability  ---- {:?}", l_index[*v]);
-	
-	
-	println!("Singular Values {:.3?}", svd.singular_values);
-	println!("========================================");
-    } 
-    
     Ok(())
 }
