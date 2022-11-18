@@ -26,20 +26,24 @@ pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32, f32, f32, 
 
     let xm = mu - 1.0;
 
-    let dump = vec![0.0, loop_number];
-    let index:Vec<f32> = dump.par_iter().map(|x| x + ds).collect();
+    let mut index: Vec<i32> =(1..10).collect();
+    //println!("index: {:?}", dump);
+    //let index:Vec<f32> = dump.iter().map(|&x| (&x-1) + ds).collect();
+    //println!("index: {:?}", index);
 
-    
-    
-    let denominator = index.par_iter().map(|d|
-        ((d + pow_a1) * (d + pow_a2) * (d + pow_a3)).sqrt()).collect();
-   
+    for x in 1..10 {
+        let mut s = x as f32 * ds;
+        s = s - ds / 2.0;
 
-        //need to finish making all of these as Rust iterators so they're easy to parallize
-    n1.push( ds / ((s + pow_a1) * denominator));
-    n2.push( ds / (( s+ pow_a2) * denominator));
-    n3.push( ds / (( +s pow_a3) * denominator));
-   
+        n1.push(ds
+            / ((s + pow_a1)*((s + pow_a1) * (s + pow_a2) * (s + pow_a3)).sqrt()));
+        n2.push(ds
+            / ((s + pow_a2)
+                * ((s + pow_a1) * (s + pow_a2) * (s + pow_a3)).sqrt()));
+        n3.push(ds
+            / ((s + pow_a3)
+                * ((s + pow_a1) * (s + pow_a2) * (s + pow_a3)).sqrt()));
+    }
     
     let n1: f32 = n1.par_iter().sum();
     let n2: f32 = n2.par_iter().sum();
@@ -59,5 +63,5 @@ pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32, f32, f32, 
     let alpha2: f32 = volume * xm / (1.0 + xm * n2);
     let alpha3: f32 = volume * xm / (1.0 + xm * n3);
 
-    return (alpha1, alpha2, alpha3, volume, a1, a2, a3, mu);
+    return (alpha1, alpha2, alpha3, volume, a1, a2, a3, mu)
 }

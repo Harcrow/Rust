@@ -19,6 +19,7 @@ use std::env;
 //use std::fs::File;
 use std::io::Error;
 use std::time::SystemTime;
+//use rayon::prelude::*;
 
 
 mod ellipsoid_polarizability;
@@ -30,14 +31,14 @@ use ellipsoid_polarizability as ell;
 fn main() -> Result<(), Error> {
 
     let now = SystemTime::now();
-    let ellipse_iter =150;
-    let ellipse_resolution = 0.05;
-    let tolerance = 50.0;
+    let ellipse_iter:i32 =10;
+    let ellipse_resolution = 1.0;
+    let tolerance = 500.0;
     
     let args: Vec<String> = env::args().collect();
     let path = &args[1];
 
-    let mut ell_vec = vec![0.0; ellipse_iter];
+    //let mut ell_vec = vec![0.0; ellipse_iter];
     let perm_vec = vec![50];
 
     let mut tensor_a1 = Vec::new();
@@ -50,18 +51,23 @@ fn main() -> Result<(), Error> {
     let mut l_index = Vec::new();
     let mut volume = Vec::new();
     
-    let mut index = 0.0;
-    let mut count = 0;
+    //let mut count = 0;
 
     //let mut file = File::create("ellipse.csv")?;
 
     //Generates the vector that will be used to generate 1000^4 ellipse tensor values
-    while ell_vec[ellipse_iter - 1] == 0.0 {
+
+    let index = 1..ellipse_iter;
+
+    let ell_vec:Vec<f32> = index.map(|x:i32| x as f32 * ellipse_resolution).collect();
+    
+    /*while ell_vec[ellipse_iter - 1] == 0.0 {
         ell_vec[count] = index + ellipse_resolution;
         index += ellipse_resolution;
         count += 1;
-    }
-    println!("ell_vec {:.1?}", ell_vec);
+    }*/
+
+    println!("ell_vec {:?}", ell_vec);
 
     let vec = tensor_parse::get_file(path.to_string());
     let mat = tensor_parse::complex_matrix(vec);
