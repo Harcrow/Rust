@@ -5,7 +5,7 @@ use rayon::prelude::*;
 pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32, f32, f32, f32, f32, f32) {
     let volume = (4.0 / 3.0) * PI * a1 * a2 * a3;
 
-    let loop_number = 100000.0;
+    //let _loop_number = 100000.0;
 
     let normal = volume.cbrt();
 
@@ -13,8 +13,6 @@ pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32, f32, f32, 
     let a2 = a2 / normal;
     let a3 = a3 / normal;
 
-
-    let ds = 0.1;
     let mut n1: Vec<f32> = Vec::new();
     let mut n2: Vec<f32> = Vec::new();
     let mut n3: Vec<f32> = Vec::new();
@@ -26,23 +24,34 @@ pub fn ellipse(a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32, f32, f32, 
 
     let xm = mu - 1.0;
 
-    let mut index: Vec<i32> =(1..10).collect();
+    //let mut _index: Vec<i32> =(1..10).collect();
     //println!("index: {:?}", dump);
     //let index:Vec<f32> = dump.iter().map(|&x| (&x-1) + ds).collect();
     //println!("index: {:?}", index);
 
-    for x in 1..10 {
+    let ds = 0.1;
+
+    for x in 1..1000000 {
         let mut s = x as f32 * ds;
         s = s - ds / 2.0;
+        
+        let s_pow_a1 = s + pow_a1;
+        let s_pow_a2 = s + pow_a2;
+        let s_pow_a3 = s + pow_a3;
+        
+        let sq_root = (s_pow_a1 * 
+                            s_pow_a2 * 
+                            s_pow_a3).sqrt();
 
         n1.push(ds
-            / ((s + pow_a1)*((s + pow_a1) * (s + pow_a2) * (s + pow_a3)).sqrt()));
+            / ((s_pow_a1)
+                * sq_root));
         n2.push(ds
-            / ((s + pow_a2)
-                * ((s + pow_a1) * (s + pow_a2) * (s + pow_a3)).sqrt()));
+            / ((s_pow_a2)
+                * sq_root));
         n3.push(ds
-            / ((s + pow_a3)
-                * ((s + pow_a1) * (s + pow_a2) * (s + pow_a3)).sqrt()));
+            / ((s_pow_a3)
+                * sq_root));
     }
     
     let n1: f32 = n1.par_iter().sum();

@@ -14,66 +14,65 @@ SVD(conj_transpose(alpha) x alpha) <-- apparently what we do?
 3. derive rotation matrix
 4. run a regression model plus threshold -- this extracts trends from the LUT to provide a score to each object in a scan
 */
+//use std::fs::File;
 
 use std::env;
-//use std::fs::File;
-use std::io::Error;
-use std::time::SystemTime;
+//use std::io::Error;
 //use rayon::prelude::*;
 
 
-mod ellipsoid_polarizability;
-mod tensor_parse;
-
 use ellipsoid_polarizability as ell;
 
-
-fn main() -> Result<(), Error> {
-
-    let now = SystemTime::now();
-    let ellipse_iter:i32 =10;
-    let ellipse_resolution = 1.0;
-    let tolerance = 500.0;
+mod ellipsoid_polarizability;
+mod tensor_parse;
+fn vec_builder(start: f32, stop: f32, resolution: f32, asp_rat: f32) -> Vec<f32>
+{
+    let ratio = asp_rat * resolution;
+    let mut n = start + ratio;
+    let last = stop + ratio;
     
-    let args: Vec<String> = env::args().collect();
-    let path = &args[1];
+    let mut new_vector = Vec::new();
+    new_vector.push(start);
+    while n <= last {
+        new_vector.push(n);
+        n = n + ratio;   
+    }
 
-    //let mut ell_vec = vec![0.0; ellipse_iter];
-    let perm_vec = vec![50];
+    new_vector
+}
+fn main() { 
+    env::set_var("RUST_BACKTRACE", "1");
+    let ellipse_iter: i32 = 50;
+    //let tolerance:f32 = 5000.0;
+    /* 
+    let ellipse_resolution = 0.1;
+    */
 
-    let mut tensor_a1 = Vec::new();
-    let mut tensor_a2 = Vec::new();
-    let mut tensor_a3 = Vec::new();
-   
-    let mut i_index = Vec::new();
-    let mut j_index = Vec::new();
-    let mut k_index = Vec::new();
-    let mut l_index = Vec::new();
-    let mut volume = Vec::new();
-    
-    //let mut count = 0;
+    //let args = Cli::parse();
+    //let args: Vec<String> = env::args().collect();
+    //let path = &args[1];
+    let path:&str = "/home/tyler/Documents/Rust/matrix/src/matrix.csv";
 
-    //let mut file = File::create("ellipse.csv")?;
-
-    //Generates the vector that will be used to generate 1000^4 ellipse tensor values
-
-    let index = 1..ellipse_iter;
-
-    let ell_vec:Vec<f32> = index.map(|x:i32| x as f32 * ellipse_resolution).collect();
-    
-    /*while ell_vec[ellipse_iter - 1] == 0.0 {
-        ell_vec[count] = index + ellipse_resolution;
-        index += ellipse_resolution;
-        count += 1;
-    }*/
-
-    println!("ell_vec {:?}", ell_vec);
+    let perm_vec = vec![50.0];
 
     let vec = tensor_parse::get_file(path.to_string());
+
     let mat = tensor_parse::complex_matrix(vec);
 
     let svd = mat.svd(true, true);
 
+    let singular_values_1 = svd.singular_values[(0, 0)];
+    let singular_values_2 = svd.singular_values[(1, 0)];
+    let singular_values_3 = svd.singular_values[(2, 0)];
+    
+    //Determine the aspect ratio of the SVD to generate more tailored iteration vectors
+    let aspect_ratio_1:f32 = singular_values_1/(singular_values_1 + singular_values_2 + singular_values_3);
+    let aspect_ratio_2:f32 = singular_values_2/(singular_values_1 + singular_values_2 + singular_values_3);
+    let aspect_ratio_3:f32 = singular_values_3/(singular_values_1 + singular_values_2 + singular_values_3);
+
+    //println!("ell_vec {:?}", ell_vec);
+
+    /*
     for i in &ell_vec {
         for j in &ell_vec {
             for k in &ell_vec {
@@ -87,37 +86,169 @@ fn main() -> Result<(), Error> {
                     j_index.push(j);
                     k_index.push(k);
                     l_index.push(l);
-                    match now.elapsed(){
-                        Ok(elapsed) => {
-                            //println!("{}", elapsed.as_micros());
-                        }
-                        Err(e) => {
-                            println!("Error: {e:?}");
-                        }
-                    }
+                    
                 }
             }
         }
     }
+    */
 
-    //    println!("Right-Singular Vector {:.3?}", svd.v_t);
-    //    println!("Left-Singular Vector {:.3?}", svd.u);
+    let mut x_index:Vec<f32> = Vec::new();
+
+    let index= 1..ellipse_iter;
+
+    //vectors dependant on aspect ratio of the SVD
+    let ell_vec_1:Vec<f32> = index.clone().map(|x:i32| x as f32 * aspect_ratio_1).collect();
+    let ell_vec_2:Vec<f32> = index.clone().map(|x:i32| x as f32 * aspect_ratio_2).collect();
+    let ell_vec_3:Vec<f32> = index.clone().map(|x:i32| x as f32 * aspect_ratio_3).collect();
+
+    //loops through until it finds an ellipsoid whose value is larger than the SVD.  This should provide two values
+    //that we can set as the upper and lower bound of the next decade of resolution
+    for x in 0..ellipse_iter-1{
+    /*
+    return (alpha1, alpha2, alpha3, volume, a1, a2, a3, mu)
+    */    
+        let ellipse = ell::ellipse(ell_vec_1[x as usize], ell_vec_2[x as usize], ell_vec_3[x as usize], perm_vec[0]);
+        
+        x_index.push((x as i32) as f32);
+
+        if ellipse.0 >= singular_values_1 && ellipse.1 >= singular_values_2 && ellipse.2 >= singular_values_3{
+            println!("ellipse 0 {:.2?}", ellipse.0);
+            println!("x_index[x] {:?}", x_index[x as usize]);
+            break;
+        }
+
+    }
+    println!("length of x_index {:?}", x_index.len());
+    let upper_bound = ell_vec_1[(x_index.len()-0) as usize];
+    let lower_bound = ell_vec_1[(x_index.len()-1) as usize];
+    let next_vec_1:Vec<f32> = vec_builder(lower_bound as f32, upper_bound as f32, 0.1, aspect_ratio_1);
+
+
+    println!("upper_bound {:?}", upper_bound);
+    println!("lower_bound {:?}", lower_bound);
+
+    let upper_bound = ell_vec_2[(x_index.len()-2) as usize];
+    let lower_bound = ell_vec_2[(x_index.len()-3) as usize];
+    let next_vec_2:Vec<f32> = vec_builder(lower_bound as f32, upper_bound as f32, 0.1, aspect_ratio_2);  
    
+    let upper_bound = ell_vec_3[(x_index.len()-2) as usize];
+    let lower_bound = ell_vec_3[(x_index.len()-3) as usize];
+    let next_vec_3:Vec<f32> = vec_builder(lower_bound as f32, upper_bound as f32, 0.1, aspect_ratio_3);
 
-    let singular_values_1 = svd.singular_values[(0, 0)];
-    let singular_values_2 = svd.singular_values[(1, 0)];
-    let singular_values_3 = svd.singular_values[(2, 0)];
 
-    let mut tensor_index_a1: Vec<usize> = Vec::new();
+   println!("next vec 1 {:.2?}", next_vec_1);
+   println!("next vec 2 {:.2?}", next_vec_2);
+   println!("next vec 3 {:.2?}", next_vec_3);
+   x_index = Vec::new();
+
+
+
+   let mut tensor_a1 = Vec::new();
+   let mut tensor_a2 = Vec::new();
+   let mut tensor_a3 = Vec::new();
+   
+   for x in 1..next_vec_1.len()-1{
+    /*
+    return (alpha1, alpha2, alpha3, volume, a1, a2, a3, mu)
+    */    
+        let ellipse = ell::ellipse(next_vec_1[x as usize], next_vec_2[x as usize], next_vec_3[x as usize],perm_vec[0]);
+        
+        x_index.push((x as i32) as f32);
+        
+        // tensor_a1.push(ellipse.0);
+        // tensor_a2.push(ellipse.1);
+        // tensor_a3.push(ellipse.2);
+
+        if ellipse.0 >= singular_values_1 && ellipse.1 >= singular_values_2 && ellipse.2 >= singular_values_3{
+            break;
+        }
+
+    }
+
+    let upper_bound = next_vec_1[(x_index.len()-0) as usize];
+    let lower_bound = next_vec_1[(x_index.len()-1) as usize];
+    let next_vec_1:Vec<f32> = vec_builder(lower_bound as f32, upper_bound as f32, 0.01, aspect_ratio_1);
+
+
+    println!("upper_bound {:?}", upper_bound);
+    println!("lower_bound {:?}", lower_bound);
+
+    let upper_bound = next_vec_2[(x_index.len()-2) as usize];
+    let lower_bound = next_vec_2[(x_index.len()-3) as usize];
+    let next_vec_2:Vec<f32> = vec_builder(lower_bound as f32, upper_bound as f32, 0.01, aspect_ratio_2);  
+   
+    let upper_bound = next_vec_3[(x_index.len()-2) as usize];
+    let lower_bound = next_vec_3[(x_index.len()-3) as usize];
+    let next_vec_3:Vec<f32> = vec_builder(lower_bound as f32, upper_bound as f32, 0.01, aspect_ratio_3);
+
+    for x in 1..next_vec_1.len()-1{
+        /*
+        return (alpha1, alpha2, alpha3, volume, a1, a2, a3, mu)
+        */    
+            let ellipse = ell::ellipse(next_vec_1[x as usize], next_vec_2[x as usize], next_vec_3[x as usize],perm_vec[0]);
+            
+            x_index.push((x as i32) as f32);
+            
+            tensor_a1.push(ellipse.0);
+            tensor_a2.push(ellipse.1);
+            tensor_a3.push(ellipse.2);
+    
+            if ellipse.0 >= singular_values_1 && ellipse.1 >= singular_values_2 && ellipse.2 >= singular_values_3{
+                break;
+            }
+    
+        }
+
+   println!("next vec 1 {:.2?}", next_vec_1);
+   println!("next vec 2 {:.2?}", next_vec_2);
+   println!("next vec 3 {:.2?}", next_vec_3);
+   x_index = Vec::new();
+
+
+
+    println!("tensor 1   {:.2?}", tensor_a1);
+    println!("tensor 2   {:.2?}", tensor_a2);
+    println!("tensor 3   {:.2?}", tensor_a3);
+
+    println!("Singular Values {:.2?}", svd.singular_values);
+    
+    //let mut tensor_index_a1: Vec<usize> = Vec::new();
+    /*
     let mut tensor_index_a2: Vec<usize> = Vec::new();
     let mut tensor_index_a3: Vec<usize> = Vec::new();
+    */
 
+    /*
     for (count, v) in tensor_a1.iter().enumerate() {
         if v <= &(singular_values_1 + tolerance) && v >= &(singular_values_1 - tolerance) {
             tensor_index_a1.push(count);
            // println!("COUNT: {:?}, V: {:?}", count, v);
         }
     }
+    
+    for (_count, v) in tensor_index_a1.iter().enumerate()
+    {
+    println!("========================================");
+	println!("Index is --------- {:?}", v);
+	
+	println!("alpha1 ----------- {:?}", tensor_a1[*v]);
+	println!("alpha2 ----------- {:?}", tensor_a2[*v]);
+	println!("alpha3 ----------- {:?}", tensor_a3[*v]);
+
+	println!("Volume ----------- {:?}", volume[*v]);
+	println!("semi-axis a1  ---- {:?}", ell_vec_1[*v]);
+	println!("semi-axis a2  ---- {:?}", ell_vec_2[*v]);
+	println!("semi-axis a3  ---- {:?}", ell_vec_3[*v]);
+	println!("permiability  ---- {:?}", perm_vec[0]);
+	
+	
+	println!("Singular Values {:.3?}", svd.singular_values);
+	println!("========================================");
+
+    } */
+
+    /*
     println!("Found {:?} matches for a1", tensor_index_a1.len());
     //println!("a1 {:?}, a2 {:?}, a3, {:?} ", tensor_a1[tensor_index_a1]
     for (_count, v) in tensor_index_a1.iter().enumerate(){
@@ -133,10 +264,14 @@ fn main() -> Result<(), Error> {
 	    tensor_index_a3.push(*v);
 	    //println!("found a3: {:?}", v);
 	}
+     
     }
-    println!("Found {:?} matches for a3", tensor_index_a3.len());
 
-    for (_count, v) in tensor_index_a3.iter().enumerate(){
+      println!("Found {:?} matches for a3", tensor_index_a3.len());
+    */
+  
+
+/* for (_count, v) in tensor_index_a1.iter().enumerate(){
 	println!("========================================");
 	println!("Index is --------- {:?}", v);
 	
@@ -153,7 +288,8 @@ fn main() -> Result<(), Error> {
 	
 	println!("Singular Values {:.3?}", svd.singular_values);
 	println!("========================================");
-    } 
     
-    Ok(())
+     */
+
+
 }

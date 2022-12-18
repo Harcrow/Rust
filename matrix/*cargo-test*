@@ -1,0 +1,169 @@
+cargo test --benches --tests --all-features 
+   Compiling matrix v0.1.0 (/home/tyler/Documents/Rust/matrix)
+error: expected `;`, found keyword `pub`
+ --> src/ellipsoid_polarizability.rs:2:25
+  |
+2 | use std::f32::consts::PI
+  |                         ^ help: add `;` here
+3 |
+4 | pub fn ellipse(volume: f32, a1: f32, a2: f32, a3: f32, mu: f32) -> (f32, f32, f32)
+  | --- unexpected token
+
+error: unexpected `==`
+ --> src/ellipsoid_polarizability.rs:7:13
+  |
+7 |     let volume ==(4/3)*PI*a1*a2*a3;
+  |                ^^ help: try using `=` instead
+
+error: float literals must have an integer part
+  --> src/ellipsoid_polarizability.rs:28:14
+   |
+28 |     let ds = .05;
+   |              ^^^ help: must have an integer part: `0.05`
+
+error[E0425]: cannot find function `pow` in this scope
+  --> src/ellipsoid_polarizability.rs:19:21
+   |
+19 |     let normalize = pow(volume, (2/3));
+   |                     ^^^ not found in this scope
+
+warning: unnecessary parentheses around function argument
+  --> src/ellipsoid_polarizability.rs:19:33
+   |
+19 |     let normalize = pow(volume, (2/3));
+   |                                 ^   ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+19 -     let normalize = pow(volume, (2/3));
+19 +     let normalize = pow(volume, 2/3);
+   |
+
+warning: unnecessary parentheses around `for` iterator expression
+  --> src/ellipsoid_polarizability.rs:33:14
+   |
+33 |     for x in (1.0..200000000.0){
+   |              ^                ^
+   |
+help: remove these parentheses
+   |
+33 -     for x in (1.0..200000000.0){
+33 +     for x in 1.0..200000000.0 {
+   |
+
+error[E0308]: mismatched types
+ --> src/ellipsoid_polarizability.rs:6:18
+  |
+6 |     if volume == 0 {
+  |                  ^
+  |                  |
+  |                  expected `f32`, found integer
+  |                  help: use a float literal: `0.0`
+
+error[E0308]: mismatched types
+ --> src/ellipsoid_polarizability.rs:9:14
+  |
+9 |     if a1 == 0 {
+  |              ^
+  |              |
+  |              expected `f32`, found integer
+  |              help: use a float literal: `0.0`
+
+error[E0277]: cannot multiply `{integer}` by `f32`
+  --> src/ellipsoid_polarizability.rs:10:22
+   |
+10 |     let a1 = volume/(4/3*PI)/a2/a3;
+   |                         ^ no implementation for `{integer} * f32`
+   |
+   = help: the trait `Mul<f32>` is not implemented for `{integer}`
+   = help: the following other types implement trait `Mul<Rhs>`:
+             <&'a f32 as Mul<Complex<f32>>>
+             <&'a f32 as Mul<f32>>
+             <&'a f64 as Mul<Complex<f64>>>
+             <&'a f64 as Mul<f64>>
+             <&'a i128 as Mul<Complex<i128>>>
+             <&'a i128 as Mul<i128>>
+             <&'a i16 as Mul<Complex<i16>>>
+             <&'a i16 as Mul<i16>>
+           and 175 others
+
+error[E0308]: mismatched types
+  --> src/ellipsoid_polarizability.rs:12:14
+   |
+12 |     if a2 == 0 {
+   |              ^
+   |              |
+   |              expected `f32`, found integer
+   |              help: use a float literal: `0.0`
+
+error[E0277]: cannot multiply `{integer}` by `f32`
+  --> src/ellipsoid_polarizability.rs:13:22
+   |
+13 |     let a2 = volume/(4/3*PI)/a1/a3;
+   |                         ^ no implementation for `{integer} * f32`
+   |
+   = help: the trait `Mul<f32>` is not implemented for `{integer}`
+   = help: the following other types implement trait `Mul<Rhs>`:
+             <&'a f32 as Mul<Complex<f32>>>
+             <&'a f32 as Mul<f32>>
+             <&'a f64 as Mul<Complex<f64>>>
+             <&'a f64 as Mul<f64>>
+             <&'a i128 as Mul<Complex<i128>>>
+             <&'a i128 as Mul<i128>>
+             <&'a i16 as Mul<Complex<i16>>>
+             <&'a i16 as Mul<i16>>
+           and 175 others
+
+error[E0308]: mismatched types
+  --> src/ellipsoid_polarizability.rs:15:14
+   |
+15 |     if a3 == 0 {
+   |              ^
+   |              |
+   |              expected `f32`, found integer
+   |              help: use a float literal: `0.0`
+
+error[E0277]: cannot multiply `{integer}` by `f32`
+  --> src/ellipsoid_polarizability.rs:16:22
+   |
+16 |     let a3 = volume/(4/3*PI)/a2/a1;
+   |                         ^ no implementation for `{integer} * f32`
+   |
+   = help: the trait `Mul<f32>` is not implemented for `{integer}`
+   = help: the following other types implement trait `Mul<Rhs>`:
+             <&'a f32 as Mul<Complex<f32>>>
+             <&'a f32 as Mul<f32>>
+             <&'a f64 as Mul<Complex<f64>>>
+             <&'a f64 as Mul<f64>>
+             <&'a i128 as Mul<Complex<i128>>>
+             <&'a i128 as Mul<i128>>
+             <&'a i16 as Mul<Complex<i16>>>
+             <&'a i16 as Mul<i16>>
+           and 175 others
+
+error[E0277]: the trait bound `{float}: Step` is not satisfied
+  --> src/ellipsoid_polarizability.rs:33:14
+   |
+33 |     for x in (1.0..200000000.0){
+   |              ^^^^^^^^^^^^^^^^^^ the trait `Step` is not implemented for `{float}`
+   |
+   = help: the following other types implement trait `Step`:
+             i128
+             i16
+             i32
+             i64
+             i8
+             isize
+             u128
+             u16
+           and 4 others
+   = note: required for `std::ops::Range<{float}>` to implement `Iterator`
+   = note: required for `std::ops::Range<{float}>` to implement `IntoIterator`
+
+Some errors have detailed explanations: E0277, E0308, E0425.
+For more information about an error, try `rustc --explain E0277`.
+warning: `matrix` (bin "matrix" test) generated 2 warnings
+error: could not compile `matrix` due to 12 previous errors; 2 warnings emitted
+
+cargo-test exited abnormally with code 101 at Mon Nov  7 19:48:55
