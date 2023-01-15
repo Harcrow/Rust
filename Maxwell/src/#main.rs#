@@ -1,0 +1,22 @@
+/*
+
+
+Symbols Used
+E = Electric field	ρ = charge density	i = electric current
+B = Magnetic field	ε0 = permittivity	J = current density
+D = Electric displacement	μ0 = permeability	c = speed of light
+H = Magnetic field strength	M = Magnetization	P = Polarization
+Integral form	Differential form
+
+k = coulomb's constant == 1/4*pi*ε0
+
+c^2 = 1/(μ0ε0)
+
+
+*/
+
+fn main() {
+    println!("Hello,");
+
+
+}

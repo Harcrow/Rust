@@ -97,7 +97,7 @@ fn main() {
 
     let index= 1..ellipse_iter;
 
-    //vectors dependant on aspect ratio of the SVD
+    //vectors dependant on aspect ratio of the SVDarm-
     let ell_vec_1:Vec<f32> = index.clone().map(|x:i32| x as f32 * aspect_ratio_1).collect();
     let ell_vec_2:Vec<f32> = index.clone().map(|x:i32| x as f32 * aspect_ratio_2).collect();
     let ell_vec_3:Vec<f32> = index.clone().map(|x:i32| x as f32 * aspect_ratio_3).collect();
