@@ -1,0 +1,12 @@
+/home/tyler/Documents/Rust/stm32f4_st25r3911/target/thumbv7em-none-eabihf/release/deps/fugit-71cb7f2897481ce7.rmeta: /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/lib.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/aliases.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/duration.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/helpers.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/instant.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/rate.rs
+
+/home/tyler/Documents/Rust/stm32f4_st25r3911/target/thumbv7em-none-eabihf/release/deps/libfugit-71cb7f2897481ce7.rlib: /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/lib.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/aliases.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/duration.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/helpers.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/instant.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/rate.rs
+
+/home/tyler/Documents/Rust/stm32f4_st25r3911/target/thumbv7em-none-eabihf/release/deps/fugit-71cb7f2897481ce7.d: /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/lib.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/aliases.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/duration.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/helpers.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/instant.rs /home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/rate.rs
+
+/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/lib.rs:
+/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/aliases.rs:
+/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/duration.rs:
+/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/helpers.rs:
+/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/instant.rs:
+/home/tyler/.cargo/registry/src/github.com-1ecc6299db9ec823/fugit-0.3.6/src/rate.rs:

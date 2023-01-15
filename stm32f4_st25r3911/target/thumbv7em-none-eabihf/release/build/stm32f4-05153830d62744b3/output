@@ -1,0 +1,3 @@
+cargo:rustc-link-search=/home/tyler/Documents/Rust/stm32f4_st25r3911/target/thumbv7em-none-eabihf/release/build/stm32f4-05153830d62744b3/out
+cargo:rerun-if-changed=src/stm32f410/device.x
+cargo:rerun-if-changed=build.rs
